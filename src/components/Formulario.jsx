@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import Error from './error'
-const Formulario = ({ pacientes, setPacientes, paciente }) => {
+const Formulario = ({ pacientes, setPacientes, paciente, setPaciente }) => {
   const [nombre, setNombre] = useState('')
   const [propietario, setPropietario] = useState('')
   const [email, setEmail] = useState('')
@@ -10,7 +10,13 @@ const Formulario = ({ pacientes, setPacientes, paciente }) => {
   const [error, setError] = useState(false)
 
   useEffect(()=> {
-    
+    if(Object.keys(paciente).length > 0) {
+      setNombre(paciente.nombre)
+      setPropietario(paciente.propietario)
+      setEmail(paciente.email)
+      setAlta(paciente.alta)
+      setSintomas(paciente.sintomas)
+    }
   },[paciente])
   
   const generarId = () => {
@@ -35,12 +41,22 @@ const Formulario = ({ pacientes, setPacientes, paciente }) => {
       propietario,
       email, 
       alta, 
-      sintomas,
-      id: generarId()
+      sintomas
+ 
     }
     // console.log(objetoPaciente)
-
+    if(paciente.id) {
+    // Editando el registro
+    objetoPaciente.id = paciente.id
+    const pacientesActualizados = pacientes.map(pacienteState => pacienteState.id === paciente.id ? objetoPaciente : pacienteState)
+    setPacientes(pacientesActualizados)
+    setPaciente({})
+    } else {
+    // Nuevo registro
+    objetoPaciente.id = generarId()
     setPacientes([...pacientes, objetoPaciente])
+    }
+
 
     // reiniciar form
 
@@ -110,7 +126,7 @@ const Formulario = ({ pacientes, setPacientes, paciente }) => {
           <input
             type="submit"
             className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-all"
-            value="Agregar pacientes"
+            value={paciente.id ? "Editar Paciente" : "agregar paciente"}
           />
         </form>
     </div>
